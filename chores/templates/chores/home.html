@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}Home — Family Chore Manager{% endblock %}
+
+{% block content %}
+  <div class="card">
+    <h1>Welcome{% if user.is_authenticated %}, {{ user.get_username }}{% endif %}</h1>
+    <p>You are signed in. Chore lists and rankings will appear here as the app grows.</p>
+  </div>
+{% endblock %}

@@ -1,0 +1,176 @@
+/* Family Chore Manager — simple responsive layout */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #1a1a1a;
+  background: #f5f5f5;
+}
+
+a {
+  color: #0b5fff;
+}
+
+.site-header {
+  background: #1a1a1a;
+  color: #fff;
+  padding: 0.75rem 1rem;
+}
+
+.site-header__inner {
+  max-width: 40rem;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.site-header__title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.site-header__title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.site-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.site-nav form {
+  margin: 0;
+}
+
+.site-nav button,
+.btn {
+  display: inline-block;
+  padding: 0.4rem 0.85rem;
+  font: inherit;
+  font-size: 0.95rem;
+  color: #fff;
+  background: #0b5fff;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.site-nav button:hover,
+.btn:hover {
+  background: #0047cc;
+}
+
+.site-nav .btn--secondary,
+.btn--secondary {
+  background: transparent;
+  border: 1px solid #ccc;
+  color: #1a1a1a;
+}
+
+.site-nav .btn--secondary:hover,
+.btn--secondary:hover {
+  background: #eee;
+}
+
+.site-header .btn--secondary {
+  border-color: #888;
+  color: #fff;
+}
+
+.site-header .btn--secondary:hover {
+  background: #333;
+}
+
+.site-main {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 2rem;
+}
+
+.messages {
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+}
+
+.messages li {
+  padding: 0.65rem 0.85rem;
+  margin-bottom: 0.5rem;
+  border-radius: 0.25rem;
+  background: #e8f0fe;
+}
+
+.messages .error,
+.messages .errorlist {
+  background: #fde8e8;
+  color: #8a1f1f;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 0.35rem;
+  padding: 1.25rem;
+}
+
+.card h1 {
+  margin-top: 0;
+  font-size: 1.35rem;
+}
+
+.form-row {
+  margin-bottom: 1rem;
+}
+
+.form-row label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-weight: 600;
+}
+
+.form-row input[type="text"],
+.form-row input[type="password"] {
+  width: 100%;
+  max-width: 100%;
+  padding: 0.5rem 0.65rem;
+  font: inherit;
+  border: 1px solid #bbb;
+  border-radius: 0.25rem;
+}
+
+.errorlist {
+  list-style: none;
+  margin: 0 0 0.75rem;
+  padding: 0;
+  color: #8a1f1f;
+}
+
+@media (min-width: 600px) {
+  .site-header {
+    padding: 0.85rem 1.5rem;
+  }
+
+  .site-main {
+    padding: 1.75rem 1.5rem 2.5rem;
+  }
+
+  .card {
+    padding: 1.5rem 1.75rem;
+  }
+}

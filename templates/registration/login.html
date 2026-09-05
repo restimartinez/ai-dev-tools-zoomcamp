@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Log in — Family Chore Manager{% endblock %}
+
+{% block content %}
+  <div class="card">
+    <h1>Log in</h1>
+    <p>Sign in with your family account to manage chores.</p>
+
+    {% if form.errors %}
+      <ul class="errorlist">
+        <li>Please enter a correct username and password.</li>
+      </ul>
+    {% endif %}
+
+    <form method="post" action="{% url 'login' %}">
+      {% csrf_token %}
+      <div class="form-row">
+        <label for="id_username">Username</label>
+        <input type="text" name="username" id="id_username" required autofocus
+               autocomplete="username" value="{{ form.username.value|default:'' }}">
+      </div>
+      <div class="form-row">
+        <label for="id_password">Password</label>
+        <input type="password" name="password" id="id_password" required
+               autocomplete="current-password">
+      </div>
+      <input type="hidden" name="next" value="{{ next }}">
+      <button class="btn" type="submit">Log in</button>
+    </form>
+  </div>
+{% endblock %}

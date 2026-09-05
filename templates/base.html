@@ -1,0 +1,42 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Family Chore Manager{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <p class="site-header__title">
+        <a href="{% url 'home' %}">Family Chore Manager</a>
+      </p>
+      <nav class="site-nav" aria-label="Account">
+        {% if user.is_authenticated %}
+          <span>{{ user.get_username }}</span>
+          <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit">Log out</button>
+          </form>
+        {% else %}
+          <a class="btn btn--secondary" href="{% url 'login' %}">Log in</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+
+  <main class="site-main">
+    {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+          <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>
