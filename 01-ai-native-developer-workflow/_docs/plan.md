@@ -167,7 +167,7 @@ Keep tests practical and focused on business rules (Django `TestCase`).
 
 - Pixel-perfect UI, browser E2E, performance
 
-Run with: `python manage.py test`
+Run from this homework directory (`01-ai-native-developer-workflow/`): `uv run python manage.py test`
 
 ## Definition of done
 
