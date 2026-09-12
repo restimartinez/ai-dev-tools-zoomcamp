@@ -1,0 +1,328 @@
+openapi: 3.0.3
+
+info:
+  title: Flux API
+  version: 1.0.0
+  description: |
+    HTTP API for Flux, a Mini Kanban Board used in DataTalksClub AI Dev Tools Zoomcamp Homework 2.
+
+    The API manages tasks on a single implicit board with three fixed statuses:
+    `TODO`, `IN_PROGRESS`, and `DONE`.
+
+    There is no authentication, multi-board support, notifications, or collaboration features.
+
+servers:
+  - url: http://localhost:8000
+    description: Local development server
+
+tags:
+  - name: tasks
+    description: Task CRUD and status moves for the single Flux board
+
+paths:
+  /tasks:
+    get:
+      tags: [tasks]
+      operationId: listTasks
+      summary: List all tasks
+      description: Returns every task on the board. Column grouping is a client concern.
+      responses:
+        "200":
+          description: All tasks on the board.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Task"
+              examples:
+                sample:
+                  value:
+                    - id: "1"
+                      title: Set up project structure
+                      description: Create frontend and backend folders for Flux.
+                      status: DONE
+                    - id: "2"
+                      title: Design Kanban board UI
+                      description: Build three columns for TODO, IN PROGRESS, and DONE.
+                      status: IN_PROGRESS
+
+    post:
+      tags: [tasks]
+      operationId: createTask
+      summary: Create a task
+      description: |
+        Creates a new task. The server generates a unique `id`.
+        If `status` is omitted, it defaults to `TODO`.
+        `description` may be omitted or an empty string.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTaskRequest"
+            examples:
+              minimal:
+                value:
+                  title: Write homework notes
+              full:
+                value:
+                  title: Connect to FastAPI backend
+                  description: Replace mock data with real API requests.
+                  status: TODO
+      responses:
+        "201":
+          description: Task created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /tasks/{task_id}:
+    parameters:
+      - $ref: "#/components/parameters/TaskId"
+
+    get:
+      tags: [tasks]
+      operationId: getTask
+      summary: Get a task by ID
+      description: Returns a single task identified by `task_id`.
+      responses:
+        "200":
+          description: The requested task.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+    put:
+      tags: [tasks]
+      operationId: updateTask
+      summary: Update a task
+      description: |
+        Replaces the editable fields of an existing task (`title`, `description`, and `status`).
+        The task `id` cannot be changed.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTaskRequest"
+            example:
+              title: Design Kanban board UI
+              description: Build three columns for TODO, IN PROGRESS, and DONE.
+              status: DONE
+      responses:
+        "200":
+          description: Task updated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+    delete:
+      tags: [tasks]
+      operationId: deleteTask
+      summary: Delete a task
+      description: Permanently removes a task from the board (hard delete).
+      responses:
+        "204":
+          description: Task deleted. No response body.
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /tasks/{task_id}/status:
+    parameters:
+      - $ref: "#/components/parameters/TaskId"
+
+    patch:
+      tags: [tasks]
+      operationId: moveTask
+      summary: Move a task to another status
+      description: |
+        Updates only the task `status` so it appears in a different column.
+        Equivalent to changing status via a full task update, but scoped to a move operation.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MoveTaskRequest"
+            example:
+              status: IN_PROGRESS
+      responses:
+        "200":
+          description: Task moved.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+components:
+  parameters:
+    TaskId:
+      name: task_id
+      in: path
+      required: true
+      description: Unique identifier of the task.
+      schema:
+        type: string
+        minLength: 1
+      example: "1"
+
+  schemas:
+    TaskStatus:
+      type: string
+      description: Column / workflow status for a task.
+      enum:
+        - TODO
+        - IN_PROGRESS
+        - DONE
+      example: TODO
+
+    Task:
+      type: object
+      description: A task on the single Flux board.
+      required:
+        - id
+        - title
+        - description
+        - status
+      properties:
+        id:
+          type: string
+          description: System-generated unique identifier. Not editable by clients.
+          minLength: 1
+          example: "1"
+        title:
+          type: string
+          description: Short name of the task. Must be non-empty after trimming whitespace.
+          minLength: 1
+          example: Design Kanban board UI
+        description:
+          type: string
+          description: Longer details about the task. May be an empty string.
+          example: Build three columns for TODO, IN PROGRESS, and DONE.
+        status:
+          $ref: "#/components/schemas/TaskStatus"
+      additionalProperties: false
+
+    CreateTaskRequest:
+      type: object
+      description: Payload for creating a task. The server assigns `id`.
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          description: Short name of the task. Must be non-empty after trimming whitespace.
+          minLength: 1
+          example: Connect to FastAPI backend
+        description:
+          type: string
+          description: Optional details. Defaults to an empty string when omitted.
+          default: ""
+          example: Replace mock data with real API requests.
+        status:
+          allOf:
+            - $ref: "#/components/schemas/TaskStatus"
+          description: Initial status. Defaults to `TODO` when omitted.
+          default: TODO
+      additionalProperties: false
+
+    UpdateTaskRequest:
+      type: object
+      description: Payload for replacing a task's editable fields.
+      required:
+        - title
+        - description
+        - status
+      properties:
+        title:
+          type: string
+          description: Short name of the task. Must be non-empty after trimming whitespace.
+          minLength: 1
+          example: Design Kanban board UI
+        description:
+          type: string
+          description: Longer details about the task. May be an empty string.
+          example: Build three columns for TODO, IN PROGRESS, and DONE.
+        status:
+          $ref: "#/components/schemas/TaskStatus"
+      additionalProperties: false
+
+    MoveTaskRequest:
+      type: object
+      description: Payload for moving a task to another column by changing its status.
+      required:
+        - status
+      properties:
+        status:
+          $ref: "#/components/schemas/TaskStatus"
+      additionalProperties: false
+
+    Error:
+      type: object
+      description: Standard error payload returned by the API.
+      required:
+        - detail
+      properties:
+        detail:
+          description: Human-readable error detail. May be a string or a list of validation issues.
+          oneOf:
+            - type: string
+              example: Task not found
+            - type: array
+              items:
+                type: object
+                additionalProperties: true
+              example:
+                - loc: [body, title]
+                  msg: Field required
+                  type: missing
+      additionalProperties: true
+
+  responses:
+    NotFound:
+      description: The requested task does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            detail: Task not found
+
+    ValidationError:
+      description: Request validation failed (invalid body, path, or query input).
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          examples:
+            missingTitle:
+              summary: Missing required title
+              value:
+                detail:
+                  - loc: [body, title]
+                    msg: Field required
+                    type: missing
+            emptyTitle:
+              summary: Empty title
+              value:
+                detail: Title must be a non-empty string
