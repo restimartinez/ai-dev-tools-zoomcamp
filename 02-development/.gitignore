@@ -1,0 +1,31 @@
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python cache / bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# pytest
+.pytest_cache/
+
+# SQLite
+*.db
+*.sqlite
+*.sqlite3
+*.sqlite3-journal
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS-specific
+.DS_Store
+Thumbs.db
+Desktop.ini
