@@ -1,62 +1,92 @@
-"""Temporary in-memory task store.
-
-Replace this module with a database-backed repository later
-(SQLite + SQLAlchemy) without changing the API layer much.
-"""
-
 from uuid import uuid4
 
+from sqlalchemy.orm import Session
+
+from app.db_models import TaskModel
 from app.models import CreateTaskRequest, Task, TaskStatus, UpdateTaskRequest
 
-_tasks: dict[str, Task] = {}
+
+def _to_task(task_model: TaskModel) -> Task:
+    return Task(
+        id=task_model.id,
+        title=task_model.title,
+        description=task_model.description,
+        status=TaskStatus(task_model.status),
+    )
 
 
-def list_tasks() -> list[Task]:
-    return list(_tasks.values())
+def list_tasks(session: Session) -> list[Task]:
+    tasks = session.query(TaskModel).all()
+    return [_to_task(task) for task in tasks]
 
 
-def get_task(task_id: str) -> Task | None:
-    return _tasks.get(task_id)
+def get_task(session: Session, task_id: str) -> Task | None:
+    task = session.get(TaskModel, task_id)
+    if task is None:
+        return None
+    return _to_task(task)
 
 
-def create_task(payload: CreateTaskRequest) -> Task:
-    task = Task(
+def create_task(session: Session, payload: CreateTaskRequest) -> Task:
+    task = TaskModel(
         id=str(uuid4()),
         title=payload.title,
         description=payload.description,
-        status=payload.status,
+        status=payload.status.value,
     )
-    _tasks[task.id] = task
-    return task
+
+    session.add(task)
+    session.commit()
+    session.refresh(task)
+
+    return _to_task(task)
 
 
-def update_task(task_id: str, payload: UpdateTaskRequest) -> Task | None:
-    existing = _tasks.get(task_id)
-    if existing is None:
+def update_task(
+    session: Session,
+    task_id: str,
+    payload: UpdateTaskRequest,
+) -> Task | None:
+    task = session.get(TaskModel, task_id)
+
+    if task is None:
         return None
 
-    updated = Task(
-        id=existing.id,
-        title=payload.title,
-        description=payload.description,
-        status=payload.status,
-    )
-    _tasks[task_id] = updated
-    return updated
+    task.title = payload.title
+    task.description = payload.description
+    task.status = payload.status.value
+
+    session.commit()
+    session.refresh(task)
+
+    return _to_task(task)
 
 
-def move_task(task_id: str, status: TaskStatus) -> Task | None:
-    existing = _tasks.get(task_id)
-    if existing is None:
+def move_task(
+    session: Session,
+    task_id: str,
+    status: TaskStatus,
+) -> Task | None:
+    task = session.get(TaskModel, task_id)
+
+    if task is None:
         return None
 
-    updated = existing.model_copy(update={"status": status})
-    _tasks[task_id] = updated
-    return updated
+    task.status = status.value
+
+    session.commit()
+    session.refresh(task)
+
+    return _to_task(task)
 
 
-def delete_task(task_id: str) -> bool:
-    if task_id not in _tasks:
+def delete_task(session: Session, task_id: str) -> bool:
+    task = session.get(TaskModel, task_id)
+
+    if task is None:
         return False
-    del _tasks[task_id]
+
+    session.delete(task)
+    session.commit()
+
     return True
