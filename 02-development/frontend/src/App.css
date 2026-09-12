@@ -1,0 +1,254 @@
+.app {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 3rem;
+}
+
+.app__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.app__eyebrow {
+  margin: 0 0 0.25rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.app__title {
+  margin: 0;
+  font-size: 2.25rem;
+  line-height: 1.1;
+  color: var(--text);
+}
+
+.app__subtitle {
+  margin: 0.5rem 0 0;
+  color: var(--muted);
+}
+
+.app__error {
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background: #fde8e8;
+  color: #9b1c1c;
+}
+
+.app__status {
+  color: var(--muted);
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+
+.column {
+  min-height: 320px;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.column__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.column__title {
+  margin: 0;
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+}
+
+.column__count {
+  min-width: 1.5rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: var(--chip);
+  color: var(--muted);
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.column__tasks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.column__empty {
+  margin: 0;
+  padding: 1rem 0.25rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.task-card {
+  padding: 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fff;
+}
+
+.task-card__title {
+  margin: 0 0 0.4rem;
+  font-size: 1rem;
+}
+
+.task-card__description {
+  margin: 0 0 0.85rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+}
+
+.task-card__description--empty {
+  font-style: italic;
+}
+
+.task-card__actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.task-card__move {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.task-card__move select,
+.field input,
+.field textarea,
+.field select {
+  width: 100%;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--text);
+  font: inherit;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.65rem 1rem;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: var(--accent-hover);
+}
+
+.btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.btn--small {
+  padding: 0.4rem 0.7rem;
+  font-size: 0.85rem;
+}
+
+.btn--secondary {
+  background: #e8edf3;
+  color: var(--text);
+}
+
+.btn--secondary:hover {
+  background: #d9e1ea;
+}
+
+.btn--danger {
+  background: #c81e1e;
+}
+
+.btn--danger:hover {
+  background: #a51818;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(15, 23, 42, 0.45);
+  z-index: 20;
+}
+
+.modal {
+  width: min(100%, 420px);
+  padding: 1.5rem;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.2);
+}
+
+.modal h2 {
+  margin: 0 0 1.25rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.field input,
+.field textarea,
+.field select {
+  font-weight: 400;
+}
+
+.form-error {
+  margin: 0 0 1rem;
+  color: #9b1c1c;
+  font-size: 0.9rem;
+}
+
+.modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+@media (max-width: 900px) {
+  .board {
+    grid-template-columns: 1fr;
+  }
+
+  .app__header {
+    flex-direction: column;
+  }
+}

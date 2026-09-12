@@ -1,0 +1,43 @@
+:root {
+  --text: #1f2937;
+  --muted: #64748b;
+  --border: #d7dee8;
+  --surface: #f4f7fb;
+  --chip: #e8eef6;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --page: #eef2f7;
+
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: var(--text);
+  background: var(--page);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
