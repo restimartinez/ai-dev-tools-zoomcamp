@@ -1,40 +1,6 @@
 import type { Task, TaskInput, TaskStatus } from '../types/task'
 
-/**
- * In-memory task store for the frontend MVP.
- * Replace the implementations in this module with HTTP calls
- * when the FastAPI backend is available.
- */
-
-const sampleTasks: Task[] = [
-  {
-    id: '1',
-    title: 'Set up project structure',
-    description: 'Create frontend and backend folders for Flux.',
-    status: 'DONE',
-  },
-  {
-    id: '2',
-    title: 'Design Kanban board UI',
-    description: 'Build three columns for TODO, IN PROGRESS, and DONE.',
-    status: 'IN_PROGRESS',
-  },
-  {
-    id: '3',
-    title: 'Connect to FastAPI backend',
-    description: 'Replace mock data with real API requests.',
-    status: 'TODO',
-  },
-  {
-    id: '4',
-    title: 'Write homework notes',
-    description: 'Document decisions made while building Flux.',
-    status: 'TODO',
-  },
-]
-
-let tasks: Task[] = structuredClone(sampleTasks)
-let nextId = 5
+const API_BASE_URL = 'http://localhost:8000'
 
 function validateTitle(title: string): string {
   const trimmed = title.trim()
@@ -44,49 +10,80 @@ function validateTitle(title: string): string {
   return trimmed
 }
 
-function findTaskIndex(id: string): number {
-  const index = tasks.findIndex((task) => task.id === id)
-  if (index === -1) {
-    throw new Error(`Task not found: ${id}`)
+async function readErrorDetail(response: Response): Promise<string> {
+  try {
+    const body: unknown = await response.json()
+    if (
+      typeof body === 'object' &&
+      body !== null &&
+      'detail' in body &&
+      (body as { detail: unknown }).detail !== undefined
+    ) {
+      const detail = (body as { detail: unknown }).detail
+      return typeof detail === 'string' ? detail : JSON.stringify(detail)
+    }
+    return JSON.stringify(body)
+  } catch {
+    return response.statusText || 'Unknown error'
   }
-  return index
+}
+
+async function handleResponse(response: Response): Promise<void> {
+  if (response.ok) {
+    return
+  }
+
+  const detail = await readErrorDetail(response)
+  throw new Error(`HTTP ${response.status}: ${detail}`)
 }
 
 export async function getTasks(): Promise<Task[]> {
-  return structuredClone(tasks)
+  const response = await fetch(`${API_BASE_URL}/tasks`)
+  await handleResponse(response)
+  return (await response.json()) as Task[]
 }
 
 export async function createTask(input: TaskInput): Promise<Task> {
-  const task: Task = {
-    id: String(nextId++),
-    title: validateTitle(input.title),
-    description: input.description.trim(),
-    status: input.status,
-  }
-  tasks = [...tasks, task]
-  return structuredClone(task)
+  const response = await fetch(`${API_BASE_URL}/tasks`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      title: validateTitle(input.title),
+      description: input.description.trim(),
+      status: input.status,
+    }),
+  })
+  await handleResponse(response)
+  return (await response.json()) as Task
 }
 
 export async function updateTask(id: string, input: TaskInput): Promise<Task> {
-  const index = findTaskIndex(id)
-  const updated: Task = {
-    ...tasks[index],
-    title: validateTitle(input.title),
-    description: input.description.trim(),
-    status: input.status,
-  }
-  tasks = tasks.map((task, i) => (i === index ? updated : task))
-  return structuredClone(updated)
+  const response = await fetch(`${API_BASE_URL}/tasks/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      title: validateTitle(input.title),
+      description: input.description.trim(),
+      status: input.status,
+    }),
+  })
+  await handleResponse(response)
+  return (await response.json()) as Task
 }
 
 export async function deleteTask(id: string): Promise<void> {
-  findTaskIndex(id)
-  tasks = tasks.filter((task) => task.id !== id)
+  const response = await fetch(`${API_BASE_URL}/tasks/${id}`, {
+    method: 'DELETE',
+  })
+  await handleResponse(response)
 }
 
 export async function moveTask(id: string, status: TaskStatus): Promise<Task> {
-  const index = findTaskIndex(id)
-  const updated: Task = { ...tasks[index], status }
-  tasks = tasks.map((task, i) => (i === index ? updated : task))
-  return structuredClone(updated)
+  const response = await fetch(`${API_BASE_URL}/tasks/${id}/status`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status }),
+  })
+  await handleResponse(response)
+  return (await response.json()) as Task
 }

@@ -1,6 +1,7 @@
 """Flux FastAPI application entry point."""
 
 from fastapi import FastAPI, HTTPException, Response
+from fastapi.middleware.cors import CORSMiddleware
 
 from app import store
 from app.models import (
@@ -14,6 +15,16 @@ app = FastAPI(
     title="Flux API",
     version="1.0.0",
     description="Mini Kanban Board API for DataTalksClub AI Dev Tools Zoomcamp Homework 2.",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:5174",
+    ],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
+    allow_headers=["Content-Type"],
 )
 
 
